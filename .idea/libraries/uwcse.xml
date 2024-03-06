@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="uwcse">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/uwcse.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/uwcse.jar!/" />
+    </SOURCES>
+  </library>
+</component>

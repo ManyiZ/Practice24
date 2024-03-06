@@ -40,18 +40,18 @@ public class SnowMan {
     /** Draw in the graphics window a snow man at location (x,y) */
     private void draw()
     {
-        Oval body = new Oval((int) ((scale)*this.x), (int) ((scale)*this.y), (int)(55*this.scale),(int)(60*this.scale), Color.white, true);
-        Oval head = new Oval(scaleX(10), (int) ((scale)*this.y - 30), (int)(35*this.scale),(int)(40*this.scale), Color.white, true);
-        Oval button1 = new Oval(scaleX(25), (int) ((scale)*this.y + 20), (int)(5*this.scale),(int)(5*this.scale), Color.black, true);
-        Oval button2 = new Oval(scaleX(25), (int) ((scale)*this.y + 30), (int)(5*this.scale),(int)(5*this.scale), Color.black, true);
-        Oval button3 = new Oval(scaleX(25), (int) ((scale)*this.y + 40), (int)(5*this.scale),(int)(5*this.scale), Color.black, true);
-        Oval eye = new Oval(scaleX(20), (int) ((scale)*this.y - 20), (int)(5*this.scale),(int)(5*this.scale), Color.black, true);
-        Oval eye2 = new Oval(scaleX(30), (int) ((scale)*this.y - 20), (int)(5*this.scale),(int)(5*this.scale), Color.black, true);
-        Line leftArm = new Line(scaleX(5), (int) ((scale)*this.y + 20), (int) ((scale)*this.x - 20), (int) ((scale)*this.y + 10), Color.black);
-        Line rightArm = new Line(scaleX(50), (int) ((scale)*this.y + 20), (int) ((scale)*this.x + 75), (int) ((scale)*this.y + 10), Color.black);
-        Rectangle hatBottom = new Rectangle(scaleX(0), (int) ((scale)*this.y-40),(int)(55*this.scale),(int)(15*this.scale), Color.red, true);
-        Rectangle hatTop = new Rectangle(scaleX(10), (int) ((scale)*this.y-60),(int)(35*this.scale),(int)(35*this.scale), Color.red, true);
-        Oval nose = new Oval(scaleX(25), scaleY(15), width(5),height(20), Color.orange, true);
+        Oval body = new Oval(scaleX(0), scaleY(0), width(55), height(60), Color.white, true);
+        Oval head = new Oval(scaleX(10), scaleY(-30), width(35), height(40), Color.white, true);
+        Oval button1 = new Oval(scaleX(25), scaleY(20), width(5), height(5), Color.black, true);
+        Oval button2 = new Oval(scaleX(25), scaleY(30), width(5), height(5), Color.black, true);
+        Oval button3 = new Oval(scaleX(25), scaleY(40), width(5), height(5), Color.black, true);
+        Oval eye = new Oval(scaleX(20), scaleY(-20), width(5), height(5), Color.black, true);
+        Oval eye2 = new Oval(scaleX(30), scaleY(-20), width(5), height(5), Color.black, true);
+        Line leftArm = new Line(scaleX(5), scaleY(20), scaleX(-20), scaleY(10), Color.black);
+        Line rightArm = new Line(scaleX(50), scaleY(20), scaleX(75), scaleY(10), Color.black);
+        Rectangle hatBottom = new Rectangle(scaleX(0), scaleY(-40),height(55),height(15), Color.red, true);
+        Rectangle hatTop = new Rectangle(scaleX(10), scaleY(-60), width(35),height(35), Color.red, true);
+        Oval nose = new Oval(scaleX(25), scaleY(-15), width(5),height(20), Color.orange, true);
         this.window.add(body);
         this.window.add(head);
         this.window.add(button1);
@@ -66,10 +66,10 @@ public class SnowMan {
         this.window.add(nose);
     }
     private int scaleX(int a){
-        return (int) ((scale)*this.x + a);
+        return (int) (this.x + a * (scale));
     }
     private int scaleY(int b){
-        return (int) ((scale)*this.y + b);
+        return (int) (this.x + b * (scale));
     }
     private int width(int  c){
         return (int) (c*this.scale);

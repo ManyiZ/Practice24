@@ -34,8 +34,13 @@ public class MountainScene {
 
         // Create the scene elements
         // e.g. a tree in the lower left area 1.5 times the normal size
-        new Tree(100, 300, 1.5, this.window);
-        new SnowMan((int) ((Math.random() * 200) + 20), (int) ((Math.random() * 100) + 20), (int) ((Math.random() * 3)+.1), this.window);
+        new Tree( (int) ((Math.random()) * 100 + 10), (int) ((Math.random()) * 300 + 10), 1.5, this.window);
+        new SnowMan( (int) ((Math.random()) * 100 + 10), (int) ((Math.random()) * 300 + 10), ((Math.random()) * 2 + .3), this.window);
+        new Tree( (int) ((Math.random()) * 300 + 200), (int) ((Math.random()) * 300 + 10), 1.5, this.window);
+        new SnowMan( (int) ((Math.random()) * 400 + 200), (int) ((Math.random()) * 300 + 10), ((Math.random()) * 2 + .3), this.window);
+        new Tree( (int) ((Math.random()) * 250 + 75), (int) ((Math.random()) * 300 + 10), 1.5, this.window);
+        new SnowMan( (int) ((Math.random()) * 250 + 75), (int) ((Math.random()) * 300 + 10), ((Math.random()) * 2 + .3), this.window);
+        new CableCar( (int) ((Math.random()) * 300 + 10),75, 1,this.window);
     }
 
     /**

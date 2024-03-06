@@ -1,4 +1,4 @@
-package auto;
+package auto.robot_component;
 
 public class Robot {
     Component part;

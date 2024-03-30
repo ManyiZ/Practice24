@@ -1,6 +1,6 @@
-package auto;
+package auto_model;
 
-import auto.robot_component.Robot;
+import auto_model.robot_component.Robot;
 
 public class Main {
     public static void main(String[] args) {

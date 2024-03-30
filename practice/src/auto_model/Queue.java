@@ -1,4 +1,4 @@
-package auto;
+package auto_model;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package auto;
+package auto_model;
 
 public class Action {
     int current;

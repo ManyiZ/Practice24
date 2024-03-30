@@ -1,4 +1,4 @@
-package auto.robot_component;
+package auto_model.robot_component;
 
 public class Component {
     private double data;

@@ -65,4 +65,7 @@ public class CableCar {
     private int height(int  d){
         return (int) (d*this.scale);
     }
+
+    public void move() {
+    }
 }

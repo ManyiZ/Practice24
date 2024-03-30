@@ -64,4 +64,7 @@ public class Tree {
 
         // Improve the drawing of the foliage and add the ornaments...
     }
+
+    public void flashOrnaments() {
+    }
 }

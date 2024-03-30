@@ -77,4 +77,7 @@ public class SnowMan {
     private int height(int  d){
         return (int) (d*this.scale);
     }
+
+    public void moveArmsAndHat() {
+    }
 }

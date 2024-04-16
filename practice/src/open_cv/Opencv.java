@@ -15,12 +15,17 @@ public class Opencv {
         camera = c;
     }
 
+    public void showWindow(){
+        camera.displayFrame();
+    }
+
 
     public static void main(String[] args){
         Stream s = new Stream();
         Opencv window = new Opencv(s);
+        while (true)
+            window.showWindow();
 
-
-        s.close();
+//        s.close();
     }
 }

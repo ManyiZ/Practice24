@@ -1,0 +1,280 @@
+package open_cv;
+
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.FaceDetectorYN;
+import org.opencv.objdetect.FaceRecognizerSF;
+
+import static org.opencv.imgcodecs.Imgcodecs.imread;
+
+public class CameraMode {
+    public CameraMode(){
+
+    }
+    public Mat filter(Mat original, int mode){
+        Mat imgToReturn = new Mat();
+        if (mode == 0){
+            Imgproc.cvtColor(original, imgToReturn, Imgproc.COLOR_RGB2GRAY);
+            return imgToReturn;
+        } else if (mode == 1){
+            Imgproc.cvtColor(original, imgToReturn, Imgproc.COLOR_RGB2HSV);
+            return imgToReturn;
+        } else if (mode == 2){
+            return facialRecognition(original);
+        }
+        return original;
+    }
+
+    private static double cosine_similar_threshold = 0.363;
+
+    private static double l2norm_similar_threshold = 1.128;
+
+    // your path of yunet model
+    private static String faceDetectModelPath = "libs/face_detection_yunet_2023mar.onnx";
+    // declare faceDetector
+    private static FaceDetectorYN faceDetector = FaceDetectorYN.create(faceDetectModelPath, "practice/autoPractice.iml"
+            ,new Size(640, 320));
+
+    // your path of sface model
+    private static String faceRecognizModelPath = "libs/face_recognition_sface_2021dec.onnx";
+    // declare faceRecognizer
+    private static FaceRecognizerSF faceRecognizer = FaceRecognizerSF.create(faceRecognizModelPath, "practice/autoPractice.iml");
+
+    public static Mat faceRecognizer(Mat imgPathA, Mat imgPathB) {
+        // load for opencv
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        // load for faceDetector
+        loadFaceDetector();
+        // load for faceRecognizer
+        loadFaceRecognizer();
+
+        return faceRecognizerUtil(imgPathA, imgPathA);
+    }
+
+    /**
+     * load of faceDetector
+     */
+    private static void loadFaceDetector() {
+        if (faceDetector != null) {
+            return;
+        }
+        // You could use the full path for faceDetect model instead to get the resource
+        String path = Thread.currentThread().getContextClassLoader().getResource("").getPath().substring(1);
+        faceDetector = FaceDetectorYN.create(path + faceDetectModelPath, "", new Size());
+    }
+
+    /**
+     * load for faceRecognizer
+     */
+    private static void loadFaceRecognizer() {
+        if (faceRecognizer != null) {
+            return;
+        }
+        // You could use the full path for faceRecogniz model instead to get the resource
+        String path = Thread.currentThread().getContextClassLoader().getResource("").getPath().substring(1);
+        faceRecognizer = FaceRecognizerSF.create(path + faceRecognizModelPath, "");
+    }
+
+    /**
+     * faceRecogniz. Calculating the distance between two face features
+     *
+     * @return
+     */
+    private static Mat faceRecognizerUtil(Mat imgA, Mat imgB) {
+        // 1.get mats of imgA and imgB
+
+        // 2.detect face from given image
+        Mat faceA = new Mat();
+        faceDetector.setInputSize(imgA.size());
+        faceDetector.detect(imgA, faceA);
+        Mat faceB = new Mat();
+        faceDetector.setInputSize(imgB.size());
+        faceDetector.detect(imgB, faceB);
+
+        /// 3.Draw face info in img
+        // Draw a face frame in imgA
+        try{
+            Imgproc.rectangle(imgA, new Rect((int) (faceA.get(0, 0)[0]), (int) (faceA.get(0, 1)[0]), (int) (faceA.get(0, 2)[0]), (int) (faceA.get(0, 3)[0])), new Scalar(0, 255, 0), 2);
+        }catch (Exception e){
+            return imgA;
+        }
+        // Draw eyes/nose/mouth points on imgB
+        //        Imgproc.circle(imgA, new Point(faceA.get(0, 4)[0], faceA.get(0, 5)[0]), 2, new Scalar(255, 0, 0), 2);
+        //        Imgproc.circle(imgA, new Point(faceA.get(0, 6)[0], faceA.get(0, 7)[0]), 2, new Scalar(0, 0, 255), 2);
+        //        Imgproc.circle(imgA, new Point(faceA.get(0, 8)[0], faceA.get(0, 9)[0]), 2, new Scalar(0, 255, 0), 2);
+        //        Imgproc.circle(imgA, new Point(faceA.get(0, 10)[0], faceA.get(0, 11)[0]), 2, new Scalar(255, 0, 255), 2);
+        //        Imgproc.circle(imgA, new Point(faceA.get(0, 12)[0], faceA.get(0, 13)[0]), 2, new Scalar(0, 255, 255), 2);
+        // Imgcodecs.imwrite("", imgA);
+
+        // Draw a face frame in imgB
+        //        Imgproc.rectangle(imgB, new Rect((int) (faceB.get(0, 0)[0]), (int) (faceB.get(0, 1)[0]), (int) (faceB.get(0, 2)[0]), (int) (faceB.get(0, 3)[0])), new Scalar(0, 255, 0), 2);
+        //        // Draw eyes/nose/mouth in imgB
+        //        Imgproc.circle(imgB, new Point(faceB.get(0, 4)[0], faceB.get(0, 5)[0]), 2, new Scalar(255, 0, 0), 2);
+        //        Imgproc.circle(imgB, new Point(faceB.get(0, 6)[0], faceB.get(0, 7)[0]), 2, new Scalar(0, 0, 255), 2);
+        //        Imgproc.circle(imgB, new Point(faceB.get(0, 8)[0], faceB.get(0, 9)[0]), 2, new Scalar(0, 255, 0), 2);
+        //        Imgproc.circle(imgB, new Point(faceB.get(0, 10)[0], faceB.get(0, 11)[0]), 2, new Scalar(255, 0, 255), 2);
+        //        Imgproc.circle(imgB, new Point(faceB.get(0, 12)[0], faceB.get(0, 13)[0]), 2, new Scalar(0, 255, 255), 2);
+        // Imgcodecs.imwrite("", imgB);*/
+
+        // 4.Aligning image to put face on the standard position
+        Mat alignFaceA = new Mat();
+        faceRecognizer.alignCrop(imgA, faceA.row(0), alignFaceA);
+        Mat alignFaceB = new Mat();
+        faceRecognizer.alignCrop(imgB, faceB.row(0), alignFaceB);
+
+        // 5.Extracting face feature from aligned image
+        Mat featureA = new Mat();
+        faceRecognizer.feature(alignFaceA, featureA);
+        featureA = featureA.clone();
+        Mat featureB = new Mat();
+        faceRecognizer.feature(alignFaceB, featureB);
+        featureB = featureB.clone();
+
+        // 6.faceRecogniz. Calculating the distance between two face features
+        // get cosine similar
+        double match1 = faceRecognizer.match(featureA, featureB, FaceRecognizerSF.FR_COSINE);
+        // get l2norm similar
+        double match2 = faceRecognizer.match(featureA, featureB, FaceRecognizerSF.FR_NORM_L2);
+//        if (match1 >= cosine_similar_threshold && match2 <= l2norm_similar_threshold) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+        return featureA;
+    }
+
+    private Mat facialRecognition(Mat frame){
+//        Mat faceBox = new Mat();
+//        FaceRecognizerSF.create("opencv/face_recognition_sface_2021dec_int8.onnx", )
+
+        // 1.get mats of imgA and imgB
+
+        // 2.detect face from given image
+        Mat faceA = new Mat();
+        return faceRecognizer(frame, frame);
+
+    }
+
+//    class FaceRecognizer {
+//
+//        private static double cosine_similar_threshold = 0.363;
+//
+//        private static double l2norm_similar_threshold = 1.128;
+//
+//        // your path of yunet model
+//        private static String faceDetectModelPath = "lib/opencv/model/face/face_detection_yunet_2022mar.onnx";
+//        // declare faceDetector
+//        private static FaceDetectorYN faceDetector = null;
+//
+//        // your path of sface model
+//        private static String faceRecognizModelPath = "lib/opencv/model/face/face_recognition_sface_2021dec.onnx";
+//        // declare faceRecognizer
+//        private static FaceRecognizerSF faceRecognizer = null;
+//
+//        public static boolean faceRecognizer(String imgPathA, String imgPathB) {
+//            // load for opencv
+//            System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+//            // load for faceDetector
+//            loadFaceDetector();
+//            // load for faceRecognizer
+//            loadFaceRecognizer();
+//
+//            return faceRecognizerUtil(imgPathA, imgPathA);
+//        }
+//
+//        /**
+//         * load of faceDetector
+//         */
+//        private static void loadFaceDetector() {
+//            if (faceDetector != null) {
+//                return;
+//            }
+//            // You could use the full path for faceDetect model instead to get the resource
+//            String path = Thread.currentThread().getContextClassLoader().getResource("").getPath().substring(1);
+//            faceDetector = FaceDetectorYN.create(path + faceDetectModelPath, "", new Size());
+//        }
+//
+//        /**
+//         * load for faceRecognizer
+//         */
+//        private static void loadFaceRecognizer() {
+//            if (faceRecognizer != null) {
+//                return;
+//            }
+//            // You could use the full path for faceRecogniz model instead to get the resource
+//            String path = Thread.currentThread().getContextClassLoader().getResource("").getPath().substring(1);
+//            faceRecognizer = FaceRecognizerSF.create(path + faceRecognizModelPath, "");
+//        }
+//
+//        /**
+//         * faceRecogniz. Calculating the distance between two face features
+//         *
+//         * @param imgPathA the path of imgA
+//         * @param imgPathB the path of imgB
+//         * @return
+//         */
+//        private static boolean faceRecognizerUtil(String imgPathA, String imgPathB) {
+//            // 1.get mats of imgA and imgB
+//            Mat imgA = Imgcodecs.imread(imgPathA);
+//            Mat imgB = Imgcodecs.imread(imgPathB);
+//
+//            // 2.detect face from given image
+//            Mat faceA = new Mat();
+//            faceDetector.setInputSize(imgA.size());
+//            faceDetector.detect(imgA, faceA);
+//            Mat faceB = new Mat();
+//            faceDetector.setInputSize(imgB.size());
+//            faceDetector.detect(imgB, faceB);
+//
+//        /// 3.Draw face info in img
+//        // Draw a face frame in imgA
+//        Imgproc.rectangle(imgA, new Rect((int) (faceA.get(0, 0)[0]), (int) (faceA.get(0, 1)[0]), (int) (faceA.get(0, 2)[0]), (int) (faceA.get(0, 3)[0])), new Scalar(0, 255, 0), 2);
+//        // Draw eyes/nose/mouth points on imgB
+//    //        Imgproc.circle(imgA, new Point(faceA.get(0, 4)[0], faceA.get(0, 5)[0]), 2, new Scalar(255, 0, 0), 2);
+//    //        Imgproc.circle(imgA, new Point(faceA.get(0, 6)[0], faceA.get(0, 7)[0]), 2, new Scalar(0, 0, 255), 2);
+//    //        Imgproc.circle(imgA, new Point(faceA.get(0, 8)[0], faceA.get(0, 9)[0]), 2, new Scalar(0, 255, 0), 2);
+//    //        Imgproc.circle(imgA, new Point(faceA.get(0, 10)[0], faceA.get(0, 11)[0]), 2, new Scalar(255, 0, 255), 2);
+//    //        Imgproc.circle(imgA, new Point(faceA.get(0, 12)[0], faceA.get(0, 13)[0]), 2, new Scalar(0, 255, 255), 2);
+//        // Imgcodecs.imwrite("", imgA);
+//
+//        // Draw a face frame in imgB
+//    //        Imgproc.rectangle(imgB, new Rect((int) (faceB.get(0, 0)[0]), (int) (faceB.get(0, 1)[0]), (int) (faceB.get(0, 2)[0]), (int) (faceB.get(0, 3)[0])), new Scalar(0, 255, 0), 2);
+//    //        // Draw eyes/nose/mouth in imgB
+//    //        Imgproc.circle(imgB, new Point(faceB.get(0, 4)[0], faceB.get(0, 5)[0]), 2, new Scalar(255, 0, 0), 2);
+//    //        Imgproc.circle(imgB, new Point(faceB.get(0, 6)[0], faceB.get(0, 7)[0]), 2, new Scalar(0, 0, 255), 2);
+//    //        Imgproc.circle(imgB, new Point(faceB.get(0, 8)[0], faceB.get(0, 9)[0]), 2, new Scalar(0, 255, 0), 2);
+//    //        Imgproc.circle(imgB, new Point(faceB.get(0, 10)[0], faceB.get(0, 11)[0]), 2, new Scalar(255, 0, 255), 2);
+//    //        Imgproc.circle(imgB, new Point(faceB.get(0, 12)[0], faceB.get(0, 13)[0]), 2, new Scalar(0, 255, 255), 2);
+//        // Imgcodecs.imwrite("", imgB);*/
+//
+//            // 4.Aligning image to put face on the standard position
+//            Mat alignFaceA = new Mat();
+//            faceRecognizer.alignCrop(imgA, faceA.row(0), alignFaceA);
+//            Mat alignFaceB = new Mat();
+//            faceRecognizer.alignCrop(imgB, faceB.row(0), alignFaceB);
+//
+//            // 5.Extracting face feature from aligned image
+//            Mat featureA = new Mat();
+//            faceRecognizer.feature(alignFaceA, featureA);
+//            featureA = featureA.clone();
+//            Mat featureB = new Mat();
+//            faceRecognizer.feature(alignFaceB, featureB);
+//            featureB = featureB.clone();
+//
+//            // 6.faceRecogniz. Calculating the distance between two face features
+//            // get cosine similar
+//            double match1 = faceRecognizer.match(featureA, featureB, FaceRecognizerSF.FR_COSINE);
+//            // get l2norm similar
+//            double match2 = faceRecognizer.match(featureA, featureB, FaceRecognizerSF.FR_NORM_L2);
+//            if (match1 >= cosine_similar_threshold && match2 <= l2norm_similar_threshold) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }
+//
+//        public static void main(String[] args) {
+//            faceRecognizer("imgPathA", "imgPathB");
+//        }
+//    }
+}
